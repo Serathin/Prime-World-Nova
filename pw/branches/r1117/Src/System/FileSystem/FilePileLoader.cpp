@@ -99,6 +99,10 @@ STARFORCE_FORCE_NOINLINE bool FilePileLoader::BuildInternalIndex( const TDiskInd
     
     SIndexKey key( fileName );
     index[key] = entry;
+
+    if (hashes) {
+      hashes->push_back(entry.crc);
+    }
   }
   
   return true;
@@ -120,7 +124,7 @@ STARFORCE_FORCE_INLINE bool FilePileLoader::ReadFileIndex( const SFilePileTail &
   return BuildInternalIndex(diskIndex);
 }
 
-bool FilePileLoader::Init( const string & fullFilename, IFileReadCallback* cb )
+bool FilePileLoader::Init( const string & fullFilename, IFileReadCallback* cb, std::vector<int>* hashes )
 {
   NI_PROFILE_FUNCTION
 
@@ -128,9 +132,11 @@ bool FilePileLoader::Init( const string & fullFilename, IFileReadCallback* cb )
 
   packFilename = fullFilename;
 
+  this->hashes = hashes;
+
   file = fopen( packFilename.c_str(), "rb" );
   CRITICAL_PILE_FILE_CHECK( file, "Could not open file", return false, FR_READ_ERROR );
-  
+
   SFilePileTail tail;
   if ( !ReadTail( tail ) || !ReadStringsTable( tail ) || !ReadFileIndex( tail ))
     return false;
@@ -354,7 +360,7 @@ void FilePileLoader::OnFileCorruption( const char * _expr, const char * _msg, Fi
   if (IsValid(readCallback)) 
   {
     (*readCallback.GetPtr())(err_code, packFilename.c_str());
-    //предотвратим повторный вызов
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     readCallback.SetPtr(NULL);
   }
 }

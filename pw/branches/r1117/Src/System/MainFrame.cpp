@@ -33,6 +33,7 @@ static bool bManageCursor = true;
 static bool s_bMinimizeOnDeactivate = false;
 static bool bAppAlwaysActive = false;
 static bool s_fullscreen = false;
+static bool s_borderless = false;
 static WNDPROC s_OldWindowProc = 0;
 static ULONG s_prevScreenWidth = 0;
 static ULONG s_prevScreenHeight = 0;
@@ -257,14 +258,14 @@ static bool CreateWnd( LPCSTR pszApp, LPCSTR pszWnd, unsigned dwWidth, unsigned 
   wstring wcharBuffer;
   NStr::ToUnicode( &wcharBuffer, string( pszApp ) );
   LPCWSTR pszAppW = wcharBuffer.c_str();
-
   
+
 	WNDCLASSW wndClass = { 0, WndProc, 0, 0, hInstance,
     LoadIconW( hInstance, nIcon), //TODO nIcon might be an actual image instead of resource
 												0, 
 												(HBRUSH)GetStockObject( NULL_BRUSH ),
 												NULL, pszAppW};
-	wndClass.style |= CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+  wndClass.style |= CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
 	atomWndClassName = RegisterClassW( &wndClass );
 
 
@@ -310,9 +311,9 @@ static void SetClipCursorRect( HWND _hWnd )
 	if (!GetWindowRect( _hWnd, &r ))
 	  return;
 	
-  if ( !s_fullscreen )
+  if ( !s_fullscreen && !s_borderless )
 	{
-    //NUM_TASK Сессия в оконном режиме - курсор не должен покидать пределы окна
+    //NUM_TASK РЎРµСЃСЃРёСЏ РІ РѕРєРѕРЅРЅРѕРј СЂРµР¶РёРјРµ - РєСѓСЂСЃРѕСЂ РЅРµ РґРѕР»Р¶РµРЅ РїРѕРєРёРґР°С‚СЊ РїСЂРµРґРµР»С‹ РѕРєРЅР°
     if (s_clipCursorInWindowedMode && !cursorClipDisabled)
     {
       r.top += wndCaptionSize;
@@ -464,11 +465,11 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
           {
              SetClipCursorRect( hWnd );
               
-              //Мак, при закрытии модального окна, не присылает WM_ACTIVATEAPP и
-              //поэтому, например, после ассерта приложение игнорирует 
-              //клавиатуру и мышь.
-              //Не очень понятно почему здесь не вызывается SetActive, но,
-              //на всякий случай, будем делать это только под Mac
+              //РњР°Рє, РїСЂРё Р·Р°РєСЂС‹С‚РёРё РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР°, РЅРµ РїСЂРёСЃС‹Р»Р°РµС‚ WM_ACTIVATEAPP Рё
+              //РїРѕСЌС‚РѕРјСѓ, РЅР°РїСЂРёРјРµСЂ, РїРѕСЃР»Рµ Р°СЃСЃРµСЂС‚Р° РїСЂРёР»РѕР¶РµРЅРёРµ РёРіРЅРѕСЂРёСЂСѓРµС‚ 
+              //РєР»Р°РІРёР°С‚СѓСЂСѓ Рё РјС‹С€СЊ.
+              //РќРµ РѕС‡РµРЅСЊ РїРѕРЅСЏС‚РЅРѕ РїРѕС‡РµРјСѓ Р·РґРµСЃСЊ РЅРµ РІС‹Р·С‹РІР°РµС‚СЃСЏ SetActive, РЅРѕ,
+              //РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№, Р±СѓРґРµРј РґРµР»Р°С‚СЊ СЌС‚Рѕ С‚РѕР»СЊРєРѕ РїРѕРґ Mac
               if( Compatibility::IsRunnedUnderWine() )
                 SetActive( true );  
           }
@@ -575,12 +576,13 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 
 
-bool NMainFrame::InitApplication( HINSTANCE hInstance, const char *pszAppName, const char *pszWndName, LPCWSTR nIcon, bool fullscreen, int width, int height, HWND hUseWindow )
+bool NMainFrame::InitApplication( HINSTANCE hInstance, const char *pszAppName, const char *pszWndName, LPCWSTR nIcon, bool fullscreen, bool borderless, int width, int height, HWND hUseWindow )
 {
   DebugTrace( "Fullscreen: %i", fullscreen? 1:0 );
 	::hInstance = hInstance;
 
   s_fullscreen = fullscreen;
+  s_borderless = borderless;
 	
   if ( hUseWindow )
   {
@@ -590,7 +592,7 @@ bool NMainFrame::InitApplication( HINSTANCE hInstance, const char *pszAppName, c
 //     ::hWnd = hUseWindow;
 // 
 //     s_OldWindowProc = (WNDPROC)GetWindowLong( hWnd, GWL_WNDPROC );
-//     // Устанавливаем наш PW'шный
+//     // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РЅР°С€ PW'С€РЅС‹Р№
 //     SetWindowLong( hWnd, GWL_WNDPROC, (LONG)WndProc );
 // 
 //     hCursor = LoadCursor( hInstance, IDC_ARROW );
@@ -687,7 +689,7 @@ void AddMsgCursor()
 {
   NI_PROFILE_FUNCTION
 
-  //@iA@TODO: сделать отправку сообщения только при изменении координат
+  //@iA@TODO: СЃРґРµР»Р°С‚СЊ РѕС‚РїСЂР°РІРєСѓ СЃРѕРѕР±С‰РµРЅРёСЏ С‚РѕР»СЊРєРѕ РїСЂРё РёР·РјРµРЅРµРЅРёРё РєРѕРѕСЂРґРёРЅР°С‚
 	int x,y;
 
   const NMainFrame::SWindowsMsg::EMsg msg = GetLocalCursorPos( x, y );
@@ -736,7 +738,7 @@ static RECT GetVirtualScreenRect()
 
 static RECT GetMonitorRect( const RECT &windowRect )
 {
-  //Находим координаты и размер монитора на котором находится окно
+  //РќР°С…РѕРґРёРј РєРѕРѕСЂРґРёРЅР°С‚С‹ Рё СЂР°Р·РјРµСЂ РјРѕРЅРёС‚РѕСЂР° РЅР° РєРѕС‚РѕСЂРѕРј РЅР°С…РѕРґРёС‚СЃСЏ РѕРєРЅРѕ
   HMONITOR hMon = ::MonitorFromRect( &windowRect, MONITOR_DEFAULTTOPRIMARY );
 
   if( hMon == NULL )
@@ -748,9 +750,9 @@ static RECT GetMonitorRect( const RECT &windowRect )
   if( !::GetMonitorInfo(hMon, &monInfo) )
     return GetVirtualScreenRect();  
     
-  //Монитор может находиться в полноэкранном режиме и тогда его разрешение не соответствуют
-  //разрешению оконного режима. В этом случае находим разрешение монитора в реестре и  
-  //корректируем значения
+  //РњРѕРЅРёС‚РѕСЂ РјРѕР¶РµС‚ РЅР°С…РѕРґРёС‚СЊСЃСЏ РІ РїРѕР»РЅРѕСЌРєСЂР°РЅРЅРѕРј СЂРµР¶РёРјРµ Рё С‚РѕРіРґР° РµРіРѕ СЂР°Р·СЂРµС€РµРЅРёРµ РЅРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‚
+  //СЂР°Р·СЂРµС€РµРЅРёСЋ РѕРєРѕРЅРЅРѕРіРѕ СЂРµР¶РёРјР°. Р’ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ РЅР°С…РѕРґРёРј СЂР°Р·СЂРµС€РµРЅРёРµ РјРѕРЅРёС‚РѕСЂР° РІ СЂРµРµСЃС‚СЂРµ Рё  
+  //РєРѕСЂСЂРµРєС‚РёСЂСѓРµРј Р·РЅР°С‡РµРЅРёСЏ
   DEVMODE devMode;
   
   devMode.dmSize = sizeof(devMode);
@@ -759,8 +761,8 @@ static RECT GetMonitorRect( const RECT &windowRect )
   if( !::EnumDisplaySettings(monInfo.szDevice, ENUM_REGISTRY_SETTINGS, &devMode) )
     return monInfo.rcWork;
   
-  //Увеличиваем размер рабочей области монитора на разницу между оригинальным 
-  //разрешением монитора и текущем разрешением
+  //РЈРІРµР»РёС‡РёРІР°РµРј СЂР°Р·РјРµСЂ СЂР°Р±РѕС‡РµР№ РѕР±Р»Р°СЃС‚Рё РјРѕРЅРёС‚РѕСЂР° РЅР° СЂР°Р·РЅРёС†Сѓ РјРµР¶РґСѓ РѕСЂРёРіРёРЅР°Р»СЊРЅС‹Рј 
+  //СЂР°Р·СЂРµС€РµРЅРёРµРј РјРѕРЅРёС‚РѕСЂР° Рё С‚РµРєСѓС‰РµРј СЂР°Р·СЂРµС€РµРЅРёРµРј
   RECT res = { 
     monInfo.rcWork.left, monInfo.rcWork.top, 
     monInfo.rcWork.right + (devMode.dmPelsWidth - Width(monInfo.rcMonitor)), 
@@ -771,7 +773,7 @@ static RECT GetMonitorRect( const RECT &windowRect )
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void NMainFrame::ResizeWindow( unsigned long width, unsigned long height, bool isFullScreen )
+void NMainFrame::ResizeWindow( unsigned long width, unsigned long height, bool isFullScreen, bool isBorderless )
 {
   //http://cboard.cprogramming.com/game-programming/56863-directx-mode-switching-fullscreen-windowed.html
   //http://www.gamedev.ru/code/forum/?id=15956
@@ -796,7 +798,7 @@ void NMainFrame::ResizeWindow( unsigned long width, unsigned long height, bool i
   }
   else
   {
-    //Центр окна должен остаться в той же позиции
+    //Р¦РµРЅС‚СЂ РѕРєРЅР° РґРѕР»Р¶РµРЅ РѕСЃС‚Р°С‚СЊСЃСЏ РІ С‚РѕР№ Р¶Рµ РїРѕР·РёС†РёРё
     POINT newPos;
 
     newPos.x = g_windowCenterPos.x - (int)width / 2;
@@ -808,8 +810,8 @@ void NMainFrame::ResizeWindow( unsigned long width, unsigned long height, bool i
     ::SetRect( &rect, newPos.x, newPos.y, newPos.x + width, newPos.y + height );
   }
 
-  ::SetWindowLong(hWindow, GWL_STYLE, dwStyle);
-  ::SetWindowLong(hWindow, GWL_EXSTYLE, dwExStyle);
+  ::SetWindowLong(hWindow, GWL_STYLE, isBorderless ? dwStyleFullscreen : dwStyle);
+  ::SetWindowLong(hWindow, GWL_EXSTYLE, isBorderless ? dwExStyleFullscreen : dwExStyle);
 
   if( !isFullScreen )
   {
@@ -819,15 +821,16 @@ void NMainFrame::ResizeWindow( unsigned long width, unsigned long height, bool i
       ::GetWindowLong(hWindow, GWL_EXSTYLE) 
     );
         
-    //Нужно добиться того чтобы окно всегда влезало в монитор на котором оно находится
+    //РќСѓР¶РЅРѕ РґРѕР±РёС‚СЊСЃСЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ РѕРєРЅРѕ РІСЃРµРіРґР° РІР»РµР·Р°Р»Рѕ РІ РјРѕРЅРёС‚РѕСЂ РЅР° РєРѕС‚РѕСЂРѕРј РѕРЅРѕ РЅР°С…РѕРґРёС‚СЃСЏ
     AlignRect( GetMonitorRect(rect), rect );
   }
      
   s_fullscreen = isFullScreen;
+  s_borderless = isBorderless;
    
   // adjust the size of the window
   ::SetWindowPos(
-      hWindow, isFullScreen ? NULL : HWND_NOTOPMOST, 
+      hWindow, isFullScreen || isBorderless ? NULL : HWND_NOTOPMOST, 
       rect.left, rect.top, Width(rect) , Height(rect), 
       SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_SHOWWINDOW | SWP_FRAMECHANGED 
   );
@@ -836,9 +839,9 @@ void NMainFrame::ResizeWindow( unsigned long width, unsigned long height, bool i
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void NMainFrame::ApplyNewParams( unsigned long width, unsigned long height, bool isFullScreen )
+void NMainFrame::ApplyNewParams( unsigned long width, unsigned long height, bool isFullScreen, bool isBorderless )
 {
-  ResizeWindow( width, height, isFullScreen );
+  ResizeWindow( width, height, isFullScreen, isBorderless );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -8,6 +8,8 @@
 #include "../nvector.h"
 #include "../nstring.h"
 
+#include <vector>
+
 namespace fileSystem
 {
 
@@ -35,7 +37,7 @@ public:
   FilePileLoader();
   ~FilePileLoader();
 
-  bool Init( const string & fullFilename, IFileReadCallback* cb = 0 );
+  bool Init( const string & fullFilename, IFileReadCallback* cb = 0, std::vector<int>* hashes = 0 );
 
   bool HasFile( const string & fileName ) const;
 
@@ -101,6 +103,8 @@ private:
   bool BuildInternalIndex( const TDiskIndex &diskIndex );
 
   mutable CPtr<IFileReadCallback> readCallback;
+
+  std::vector<int>* hashes;
 };
 
 } //namespace fileSystem

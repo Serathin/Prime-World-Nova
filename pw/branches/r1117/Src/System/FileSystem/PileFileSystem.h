@@ -4,6 +4,8 @@
 #include "FileSystem.h"
 #include "../StarForce/StarForce.h"
 
+#include <vector>
+
 
 namespace fileSystem
 {
@@ -16,7 +18,7 @@ class PileFileSystem : public IFileSystem, public CObjectBase
 
 public:
   PileFileSystem();
-  PileFileSystem( IFileReadCallback* callback );
+  PileFileSystem( IFileReadCallback* callback, std::vector<int>* hashes );
 
   virtual bool            GetFileInfo( SFileInfo *info, const string &fileName );
   virtual void            GetDirectories( vector<string> *pDirectories, const string &root );
@@ -32,6 +34,8 @@ private:
   CObj<IFileReadCallback> readCallback;
 
   bool ScanForPiles();
+
+  std::vector<int>* hashes;
 };
 
 } //namespace fileSystem

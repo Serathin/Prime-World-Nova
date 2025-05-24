@@ -9,6 +9,8 @@
 #include "System/Histogram.h"
 #include "PF_GameLogic/ReplayInfo.h"
 
+#include <vector>
+
 
 namespace NCore
 {
@@ -67,16 +69,16 @@ namespace EGameState
 }
 
 //-------------------------------------------------------------------
-// Продолжатель дела ClientBase, но на поприще старта игровой сессии
+// РџСЂРѕРґРѕР»Р¶Р°С‚РµР»СЊ РґРµР»Р° ClientBase, РЅРѕ РЅР° РїРѕРїСЂРёС‰Рµ СЃС‚Р°СЂС‚Р° РёРіСЂРѕРІРѕР№ СЃРµСЃСЃРёРё
 //-------------------------------------------------------------------
-// Вообще этот код можно было оставить прямо в ClientBase.
-// Функционал разделен на два класса по двум причинам:
-//  1. Некоторые вещи отсюда не нужны в GameTestClient
-//  2. В ClientBase уже и так много кода
+// Р’РѕРѕР±С‰Рµ СЌС‚РѕС‚ РєРѕРґ РјРѕР¶РЅРѕ Р±С‹Р»Рѕ РѕСЃС‚Р°РІРёС‚СЊ РїСЂСЏРјРѕ РІ ClientBase.
+// Р¤СѓРЅРєС†РёРѕРЅР°Р» СЂР°Р·РґРµР»РµРЅ РЅР° РґРІР° РєР»Р°СЃСЃР° РїРѕ РґРІСѓРј РїСЂРёС‡РёРЅР°Рј:
+//  1. РќРµРєРѕС‚РѕСЂС‹Рµ РІРµС‰Рё РѕС‚СЃСЋРґР° РЅРµ РЅСѓР¶РЅС‹ РІ GameTestClient
+//  2. Р’ ClientBase СѓР¶Рµ Рё С‚Р°Рє РјРЅРѕРіРѕ РєРѕРґР°
 
-//Updated: Все-таки нужно склеить ClientBase и GameClient в один класс.
-//Функционал из GameClient, ненужный в GameTestclient, перенести
-//в производный "PW"-класс
+//Updated: Р’СЃРµ-С‚Р°РєРё РЅСѓР¶РЅРѕ СЃРєР»РµРёС‚СЊ ClientBase Рё GameClient РІ РѕРґРёРЅ РєР»Р°СЃСЃ.
+//Р¤СѓРЅРєС†РёРѕРЅР°Р» РёР· GameClient, РЅРµРЅСѓР¶РЅС‹Р№ РІ GameTestclient, РїРµСЂРµРЅРµСЃС‚Рё
+//РІ РїСЂРѕРёР·РІРѕРґРЅС‹Р№ "PW"-РєР»Р°СЃСЃ
 
 class GameClient : public NCore::ISessionRunner, public BaseObjectMT
 {  
@@ -85,7 +87,7 @@ class GameClient : public NCore::ISessionRunner, public BaseObjectMT
 public:
   typedef map<int, int> TUsersLoadingStatus; //userId -> loadingProgress
 
-  GameClient( ClientBase * _client, NWorld::IMapCollection * _mapCollection, FastReconnectCtx * _fastReconnectCtx, const bool _isSpectator, const bool _isTutorial );
+  GameClient( ClientBase * _client, NWorld::IMapCollection * _mapCollection, FastReconnectCtx * _fastReconnectCtx, const bool _isSpectator, const bool _isTutorial, std::vector<int>* hashes );
 
   ClientBase * Client() { return client; }
   Transport::TClientId ClientId() { return clientId; }
@@ -175,8 +177,8 @@ private:
   int                                 framesSkipped;
   timer::Time                         timeToSkip;
 
-  timer::Time                         timeLastPingRequest; // время, когда последний раз запрашивали пинг (получили ответ или нет - неважно)
-  timer::Time                         timeLastUnansweredPing; // время, когда последний раз запрашивали пинг, на который еще НЕ получен ответ (при ответе сбрасываем в 0)
+  timer::Time                         timeLastPingRequest; // РІСЂРµРјСЏ, РєРѕРіРґР° РїРѕСЃР»РµРґРЅРёР№ СЂР°Р· Р·Р°РїСЂР°С€РёРІР°Р»Рё РїРёРЅРі (РїРѕР»СѓС‡РёР»Рё РѕС‚РІРµС‚ РёР»Рё РЅРµС‚ - РЅРµРІР°Р¶РЅРѕ)
+  timer::Time                         timeLastUnansweredPing; // РІСЂРµРјСЏ, РєРѕРіРґР° РїРѕСЃР»РµРґРЅРёР№ СЂР°Р· Р·Р°РїСЂР°С€РёРІР°Р»Рё РїРёРЅРі, РЅР° РєРѕС‚РѕСЂС‹Р№ РµС‰Рµ РќР• РїРѕР»СѓС‡РµРЅ РѕС‚РІРµС‚ (РїСЂРё РѕС‚РІРµС‚Рµ СЃР±СЂР°СЃС‹РІР°РµРј РІ 0)
 
   AppFramework::InstanceStatistics    stats;
   int                                 lastStep;
@@ -202,6 +204,8 @@ private:
   Strong<NWorld::MapDescriptionLoader>  mapDescription;
 
   StrongMT<NCore::ReplayWriter>       replayWriter;
+
+  std::vector<int>* hashes;
 
   void UpdateNoDataStatistics(int step, bool noData);
   void UpdatePingStatistics();

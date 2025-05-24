@@ -131,7 +131,7 @@ struct ClientHolder
         info.step = step-confirmFrequency;
       } else
       {
-        // TODO: info.step = step - step % confirmFrequency -- эквивалент
+        // TODO: info.step = step - step % confirmFrequency -- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         info.step = (((step + (confirmFrequency-step%confirmFrequency))/confirmFrequency)-1)*confirmFrequency; // first unconfirmed step
       }
     }
@@ -572,7 +572,7 @@ public:
     Started,
     Blocked,
     Finishing,
-    WaitingRoll,
+WaitingRoll,
     Finished,
     Terminated,
   };
@@ -586,7 +586,8 @@ public:
           Peered::ICommandsHandler* _handler,
           lobby::ISessionHybridLink * _statsLink,
           IPeeredStatistics * _statisticsWrapper,
-          HybridServer::IMcChannelsWrapper * _mcChannelWrapper):
+          HybridServer::IMcChannelsWrapper * _mcChannelWrapper,
+          bool _isCustomGame):
   clientIndex(0), 
   limitClients(_limitClients), 
   logStream(_logStream),
@@ -604,7 +605,8 @@ public:
   mcChannelWrapper(_mcChannelWrapper),
   firstConnectionTimeOutSent(false),
   _protection(),
-  _pendingMagic()
+  _pendingMagic(),
+  isCustomGame(_isCustomGame)
   {
     commands.SetServerId(_data.serverId);
     statuses.SetServerId(_data.serverId);
@@ -806,8 +808,8 @@ public:
 
   void ResumeGame(int forcedStartTimerValue=0);
 
-  ClientHolder& AddClient(uint clientId, Login::ClientVersion clientVersion, IGameClient* _client);
-  ClientHolder * AddClientFast(uint clientId, int clientIndex, IGameClient* _client, int fromStep);
+  ClientHolder * AddClient(uint clientId, Login::ClientVersion clientVersion, IGameClient* _client, bool isSpectator);
+  ClientHolder * AddClientFast(uint clientId, int clientIndex, IGameClient* _client, int fromStep, bool isSpectator);
 
   bool AddClientToMcChannel(ClientHolder & client);
 
@@ -1056,7 +1058,7 @@ public:
   void SendWorldDataInfo(int clientIndex, const WorldDataInfo& _worldDataInfo);
   void SendWorldDataPart(int clientIndex, const rpc::MemoryBlock& worldDataPart);
   void SetGameClientReconnect(int clientIndex, Peered::IGameClientReconnect * gameClientReconnect);
-  void OnGameCheated(uint clientId, uint clientIndex, lobby::ECheatType::Enum cheatType = lobby::ECheatType::None);
+    void OnGameCheated(uint clientId, uint clientIndex, lobby::ECheatType::Enum cheatType = lobby::ECheatType::None);
   uint FillClientStatistics(nstl::vector<Peered::SClientStatistics> & clientsStatistics);
   void UpdateClientCommands( ClientHolder& holder, bool stepped, int lastStep );
   void SetNeedToApplyWorldData(bool _needToApplyWorldData) { needToApplyWorldData = _needToApplyWorldData; }
@@ -1166,6 +1168,8 @@ private:
 
   Protection::StepRecords _protection;
   nstl::vector<Protection::MagicRecord> _pendingMagic;
+
+  bool isCustomGame;
 };
 
 }

@@ -4,12 +4,12 @@
 #define PRODUCT_EXECUTABLE		"PF_Game.exe"
 #define PRODUCT_TITLE_SHORT		"PF"
 
-#define ENTERPRISE_COMPANY		"Nival Network"
-#define ENTERPRISE_COPYRIGHT	"Copyright© Nival Network 2008, 2009"
-#define ENTERPRISE_TRADEMARK	"Nival® is a registered trademark of Nival Group."
+#define ENTERPRISE_COMPANY		"Nival Network feat Prime World Nova"
+#define ENTERPRISE_COPYRIGHT	"Copyrightï¿½ Nival Network 2008, 2009"
+#define ENTERPRISE_TRADEMARK	"Nivalï¿½ is a registered trademark of Nival Group."
 
 #define VERSION_MAJOR			0
-#define VERSION_MINOR			0
+#define VERSION_MINOR			2
 #define VERSION_REVISION	0
 #define VERSION_BUILD   	0
-#define VERSION_LINE			"PRIVATE"
+#define VERSION_LINE			"PRIME WORLD NOVA"

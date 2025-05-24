@@ -15,7 +15,7 @@ class RIGameClient : public IGameClient, public BaseObjectMT
 {
   NI_DECLARE_REFCOUNT_CLASS_2(RIGameClient, IGameClient, BaseObjectMT);
 public:
-  RPC_INFO("Peered::IGameClient", 0xcf716401);
+  RPC_INFO("Peered::IGameClient", 0xce53a05b);
   
   RIGameClient() : handler(0) {}
   RIGameClient( rpc::EntityHandler* _handler, rpc::IRemoteEntity* _parent )
@@ -135,7 +135,7 @@ public:
   virtual void SetParent(rpc::IRemoteEntity* _parent) { parent = _parent; }
   virtual rpc::Status GetStatus() { return handler->GetStatus(); }
 
-  static uint GetClassCrcStatic() { return 0xcf716401; }
+  static uint GetClassCrcStatic() { return 0xce53a05b; }
 protected:
   friend class rpc::Gate;
 
@@ -247,7 +247,7 @@ class RIGameServer : public IGameServer, public BaseObjectMT
 {
   NI_DECLARE_REFCOUNT_CLASS_2(RIGameServer, IGameServer, BaseObjectMT);
 public:
-  RPC_INFO("Peered::IGameServer", 0xeb8e44be);
+  RPC_INFO("Peered::IGameServer", 0x5af7d6de);
   
   RIGameServer() : handler(0) {}
   RIGameServer( rpc::EntityHandler* _handler, rpc::IRemoteEntity* _parent )
@@ -270,13 +270,13 @@ public:
   inline bool IsUpdated() const { return handler->IsUpdated(); }
   rpc::EntityHandler* GetHandler() { return handler; }
 
-  void AddClient(  const char* name, uint clientId, const Login::ClientVersion& clientVersion, NI_LPTR IGameClient* _client )
+  void AddClient(  const char* name, uint clientId, const Login::ClientVersion& clientVersion, NI_LPTR IGameClient* _client, bool isSpectator, int crc )
   {
-    handler->Go(handler->Call( 0, name, clientId, clientVersion, RemotePtr<RIGameClient>(_client) ));
+    handler->Go(handler->Call( 0, name, clientId, clientVersion, RemotePtr<RIGameClient>(_client), isSpectator, crc ));
   }
-  void AddClientFast(  int clientId, int clientIndex, NI_LPTR IGameClient* _client, int fromStep )
+  void AddClientFast(  int clientId, int clientIndex, NI_LPTR IGameClient* _client, int fromStep, bool isSpectator, int crc )
   {
-    handler->Go(handler->Call( 1, clientId, clientIndex, RemotePtr<RIGameClient>(_client), fromStep ));
+    handler->Go(handler->Call( 1, clientId, clientIndex, RemotePtr<RIGameClient>(_client), fromStep, isSpectator, crc ));
   }
   void SendCommand(  int clientIndex, const rpc::MemoryBlock& command, bool isPlayerCommand )
   {
@@ -407,7 +407,7 @@ public:
   virtual void SetParent(rpc::IRemoteEntity* _parent) { parent = _parent; }
   virtual rpc::Status GetStatus() { return handler->GetStatus(); }
 
-  static uint GetClassCrcStatic() { return 0xeb8e44be; }
+  static uint GetClassCrcStatic() { return 0x5af7d6de; }
 protected:
   friend class rpc::Gate;
 

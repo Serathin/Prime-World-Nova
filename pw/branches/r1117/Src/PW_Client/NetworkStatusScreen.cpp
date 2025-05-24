@@ -102,6 +102,8 @@ void NetworkStatusScreen::UpdateUi()
     newState = "GameFinished";
   else if ( m_gsGracefullDisconnectReason == Peered::EDisconnectReason::ServerError )
     newState = "ServerError";
+  else if ( m_gsGracefullDisconnectReason == Peered::EDisconnectReason::ClientDataCorrupted )
+    newState = "ClientDataCorrupted";
   else if ( m_gsConnectionIsDead || ( m_gsGracefullDisconnectReason != Peered::EDisconnectReason::None ) )
     newState = "NetworkFailure";
 
@@ -127,6 +129,10 @@ void NetworkStatusScreen::UpdateUi()
       m_errorOpa = 1.0f;
     m_errorOpa -= NMainLoop::GetTimeDelta() * 0.4f;
     m_text->SetOpacity( m_errorOpa );
+
+    if (m_gsGracefullDisconnectReason == Peered::EDisconnectReason::ClientDataCorrupted && m_text->GetWindowLayoutDBID().GetId() == "C8BD6C3A-2283-4C88-AA34-9A95469ED435") {
+      m_text->SetCaptionTextW(L"ClientDataCorrupted");
+    }
   }
 }
 

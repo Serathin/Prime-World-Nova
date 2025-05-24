@@ -63,7 +63,7 @@ HWND GetWnd();
 void  SetWnd(HWND _hwnd);
 HINSTANCE GetInstance();
 void PumpMessages();
-bool InitApplication( HINSTANCE hInstance, const char *pszAppName, const char *pszWndName, LPCWSTR nIcon, bool fullscreen, int width, int height, HWND hUseWindow );
+bool InitApplication( HINSTANCE hInstance, const char *pszAppName, const char *pszWndName, LPCWSTR nIcon, bool fullscreen, bool borderless, int width, int height, HWND hUseWindow );
 void ShutdownApplication();
 
 void SetCursor( HCURSOR _hCursor );
@@ -71,12 +71,12 @@ void ShowCursor( bool bShow );
 HCURSOR GetCurrentCursor();
 void EnableCursorManagement( bool bEnable );
 bool UpdateCursorRectInt( const char* name, const vector<wstring> &paramsSet );
-void ResizeWindow( unsigned long width, unsigned long height, bool isFullScreen );
+void ResizeWindow( unsigned long width, unsigned long height, bool isFullScreen, bool isBorderless );
 
 void DumpWindowStyle( DWORD dwStyle );
 void DumpExWindowStyle( DWORD dwStyle );
 
-void ApplyNewParams( unsigned long width, unsigned long height, bool isFullScreen );
+void ApplyNewParams( unsigned long width, unsigned long height, bool isFullScreen, bool isBorderless );
 void SetActualClipCursorRect();
 
 void SetCloseHandler( ICloseApplicationHandler* handler );

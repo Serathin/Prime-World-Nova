@@ -173,7 +173,7 @@ HybridServerDispencer::HybridServerDispencer(
   NLogg::CChannelLogger* _logStream,
   const Transport::TServiceId & _serviceId,
   const Transport::TServiceId & _reconnectIfaceId,
-  rpc::IfaceRequester<roll::RIBalancer> * _rollBalancer,
+rpc::IfaceRequester<roll::RIBalancer> * _rollBalancer,
   nvl::ITerminator * _replaysTerminator,
   StatisticService::GameStatClient * _statistics,
   Transport::IPerfCounters * _perfCounters ):
@@ -230,7 +230,7 @@ void HybridServerDispencer::AcquireNewServer( const Peered::SAllocationParams & 
   Peered::SchedulerData data;
   StrongMT<HybridServer::ICommandsLog> log;
   StrongMT<Peered::IPeeredStatistics> statisticsWrapper;
-  StrongMT<Peered::IAwardsRequester> awardsRequester;
+StrongMT<Peered::IAwardsRequester> awardsRequester;
   StrongMT<HybridServer::IMcChannelsWrapper> mcChannelWrapper;
   {
     threading::MutexLock lock(configLock);
@@ -240,7 +240,7 @@ void HybridServerDispencer::AcquireNewServer( const Peered::SAllocationParams & 
     log = GetReplayWriter(_params.sessionId, _params.gameParams.mapId);
     statisticsWrapper = GetStatisticsWriter();
     FillMapSettings(&data, _params);
-    if (!_params.auxData.mapDesc.empty())
+if (!_params.auxData.mapDesc.empty())
       awardsRequester = new Peered::AwardsRequester(rollBalancer, logStream, _params.sessionId, hybridServerSettings.rollRetryTimer);
     if (data.sessionSettings.multicastStepsEnabled)
       mcChannelWrapper = new McChannelsWrapper(transport, logStream, _params.sessionId);
@@ -251,6 +251,7 @@ void HybridServerDispencer::AcquireNewServer( const Peered::SAllocationParams & 
   StrongMT<Peered::CommandsScheduler> sv = new Peered::CommandsScheduler(
     data,
     reconnectIfaceId,
+    _params.crc,
     handler,
     log,
     crcDumper,
@@ -260,7 +261,7 @@ void HybridServerDispencer::AcquireNewServer( const Peered::SAllocationParams & 
     logStream,
     _params.allocid,
     allocatorNotify,
-    awardsRequester,
+awardsRequester,
     &_params.gameLineUp,
     &_params.gameParams,
     statisticsWrapper,
@@ -511,7 +512,7 @@ ICommandsLog * HybridServerDispencer::GetReplayWriter(Peered::TSessionId session
     if (!replaysTerminator.Get())
       return GetDummyReplayWriter();
 
-    // NUM_TASK папки для категорий; BDS использует std::ofstream, а он папок не создает
+    // NUM_TASK пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ; BDS пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ std::ofstream, пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     // HACKY
     // TODO: verify?
     if (replayCategory)
@@ -521,7 +522,7 @@ ICommandsLog * HybridServerDispencer::GetReplayWriter(Peered::TSessionId session
       NFile::CreatePath(NFile::Combine(replaysFolder, *replayCategory));
     }
 
-    // NUM_TASK представление sessionID в имени реплея в 10-чной системе
+    // NUM_TASK пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ sessionID пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ 10-пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     const nstl::string fileName = replayCategory
       ? NDebug::GenerateDebugFileName(NI_STRFMT("%llu", sessionId), "pwrp", replayCategory->c_str(), true)
       : NDebug::GenerateDebugFileName(NI_STRFMT("%llu", sessionId), "pwrp", 0, false);

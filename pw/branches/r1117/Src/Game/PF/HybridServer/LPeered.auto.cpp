@@ -14,7 +14,7 @@ namespace Peered
 	typedef void (Peered::IGameClient::*TStepBatch)( int lastConfirmedStep, const nstl::vector<ClientStepData>* stepData);
 	typedef void (Peered::IGameClient::*TOnAsync)( int step, const nstl::vector<AsyncInfo>* async);
 	typedef void (Peered::IGameClient::*TOnChangeClientStatus)( const nstl::vector<BriefClientInfo>* clientStatuses);
-	typedef void (Peered::IGameClient::*TAward)( const vector<roll::SAwardInfo> * _awards);
+typedef void (Peered::IGameClient::*TAward)( const vector<roll::SAwardInfo> * _awards);
 	typedef void (Peered::IGameClient::*TOnSpectate)( const SpectatorInfo* info);
 
 
@@ -117,7 +117,7 @@ namespace Peered
 {
 
 
-	typedef void (Peered::IGameServer::*TAddClient)( const char* name, uint clientId, const Login::ClientVersion* clientVersion, NI_LPTR IGameClient* _client);
+	typedef void (Peered::IGameServer::*TAddClient)( const char* name, uint clientId, const Login::ClientVersion* clientVersion, NI_LPTR IGameClient* _client, bool isSpectator, int crc);
 	typedef void (Peered::IGameServer::*TSendCommand)( int clientIndex, const rpc::MemoryBlock* command, bool isPlayerCommand);
 	typedef SHybridPongResult& (Peered::IGameServer::*TPing)( SHybridPongResult* time_step);
 	typedef void (Peered::IGameServer::*TOnGameFinish)( int clientIndex, int step, const StatisticService::RPC::SessionClientResults * finishInfo);

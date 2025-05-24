@@ -27,7 +27,7 @@ enum Status
   ConnectionTimedOutOnReconnect       = 9,
   DisconnectedByAsync                 = 10,
   RefusedToReconnect                  = 11,
-  ForceDWORD                          = 0xFFFFFFFF,
+    ForceDWORD                          = 0xFFFFFFFF,
 };
 
 
@@ -57,7 +57,7 @@ inline bool IsConnectedStatus(int status)
   case Connecting:
   case Ready:
   case Away:
-    return true;
+      return true;
   default:
     return false;
   }
@@ -166,7 +166,7 @@ struct SClientStatistics : public rpc::Data
 
   ZDATA
   ZNOPARENT( rpc::Data )
-  Transport::TClientId      clientId; //FIXME: в принципе, это поле здесь не нужно; Надо бы попробовать избавится от него
+  Transport::TClientId      clientId; //FIXME: пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ; пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
   EGameFinishClientState::Enum  clientState;
   uint                      totalAfkSeconds; 
   ZEND int operator&( IBinSaver &f ) { f.Add(2,&clientId); f.Add(3,&clientState); f.Add(4,&totalAfkSeconds); return 0; }
@@ -271,17 +271,19 @@ struct SAllocationParams : public rpc::Data
 
   ZDATA
   ZNOPARENT( rpc::Data )
-  uint                    allocid;
-  TSessionId              sessionId;
-  vector<ClientInfo>      clientsInfo;
-  SAuxData                auxData;
-  lobby::SGameParameters  gameParams;
-  lobby::TGameLineUp      gameLineUp;
-  ZEND int operator&( IBinSaver &f ) { f.Add(2,&allocid); f.Add(3,&sessionId); f.Add(4,&clientsInfo); f.Add(5,&auxData); f.Add(6,&gameParams); f.Add(7,&gameLineUp); return 0; }
+  uint                               allocid;
+  TSessionId                         sessionId;
+  vector<ClientInfo>                 clientsInfo;
+  SAuxData                           auxData;
+  lobby::SGameParameters             gameParams;
+  lobby::TGameLineUp                 gameLineUp;
+  int                                crc;
+  ZEND int operator&( IBinSaver &f ) { f.Add(2,&allocid); f.Add(3,&sessionId); f.Add(4,&clientsInfo); f.Add(5,&auxData); f.Add(6,&gameParams); f.Add(7,&gameLineUp); f.Add(8,&crc); return 0; }
 
   SAllocationParams() :
   allocid( 0 ),
-  sessionId( 0 )
+  sessionId( 0 ),
+  crc( 0 )
   {}
 };
 

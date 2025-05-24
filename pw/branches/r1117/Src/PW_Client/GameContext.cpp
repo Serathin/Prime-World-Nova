@@ -76,14 +76,15 @@ NI_DEFINE_REFCOUNT( Game::IGameContextUiInterface )
 namespace Game
 {
 
-GameContext::GameContext( const char * _sessionKey, const char * _devLogin, const char * _mapId, NGameX::ISocialConnection * _socialConnection, NGameX::GuildEmblem* _guildEmblem, const bool _isSpectator, const bool _isTutorial ) :
+GameContext::GameContext( const char * _sessionKey, const char * _devLogin, const char * _mapId, NGameX::ISocialConnection * _socialConnection, NGameX::GuildEmblem* _guildEmblem, const bool _isSpectator, const bool _isTutorial, std::vector<int>* hashes ) :
   socialMode( _sessionKey ? true : false ),
   status( EContextStatus::Ready ),
   clientWasInitialized( false ),
   socialConnection(_socialConnection),
   guildEmblem( _guildEmblem ),
   isSpectator( _isSpectator ),
-  isTutorial( _isTutorial )
+  isTutorial( _isTutorial ),
+  hashes( hashes )
 {
   if ( _sessionKey )
     if ( !ParseSessionKey( _sessionKey ) )
@@ -159,7 +160,7 @@ void GameContext::Cleanup()
   debugVarsSender = 0;
   if ( chatClient )
   {
-    // Разрываем кольцо NUM_TASK
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ NUM_TASK
     chatClient->Shutdown();
   }
   chatClient = 0;
@@ -737,7 +738,7 @@ void GameContext::AcquireGameStat()
 {
   gameStat = 0;
 
-  //UGLY: Объект создается здесь, инициализируется и поллится из SessionRunnerPW
+  //UGLY: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ SessionRunnerPW
   debugVarsSender = new DebugVarsSender;
 
   StrongMT<StatisticService::IStatDataDispatcher> statDispatcher = s_stat_immidiate ? 
@@ -850,7 +851,7 @@ void GameContext::StartGameClient()
   NI_ASSERT( lobbyClient, "" );
 
   gameStatLogic = 0;
-  gameClient = new lobby::GameClientPW( lobbyClient, lobbyClient->Maps(), networkStatusScreen, fastReconnectCtx, socialConnection, loadingScreen, guildEmblem, isSpectator, isTutorial );
+  gameClient = new lobby::GameClientPW( lobbyClient, lobbyClient->Maps(), networkStatusScreen, fastReconnectCtx, socialConnection, loadingScreen, guildEmblem, isSpectator, isTutorial, hashes );
 
   if ( gameStat )
   {

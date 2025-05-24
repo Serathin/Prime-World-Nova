@@ -355,7 +355,7 @@ ClientHolder* Clients::GetDisconnectedClient(int clientIndex)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-ClientHolder& Clients::AddClient(uint clientId, Login::ClientVersion _clientVersion, IGameClient* _client)
+ClientHolder* Clients::AddClient(uint clientId, Login::ClientVersion _clientVersion, IGameClient* _client, bool)
 {
   ClientHolder* result = 0;
   ClientContainer::iterator it = _FindWaitClient(clientId);
@@ -411,11 +411,11 @@ ClientHolder& Clients::AddClient(uint clientId, Login::ClientVersion _clientVers
         data.serverId, clientId, result->clientIndex);
   }
 
-  return *result;
+  return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-ClientHolder * Clients::AddClientFast(uint clientId, int clientIndex, IGameClient* _client, int fromStep)
+ClientHolder * Clients::AddClientFast(uint clientId, int clientIndex, IGameClient* _client, int fromStep, bool)
 {
   bool needRestore = false;
   int lastStep = fromStep - 1;  // Last step client have processed
@@ -517,7 +517,7 @@ bool Clients::AddClientToMcChannel(ClientHolder & client)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Clients::AddSpectator( uint clientId, const wstring& nickname )
 {
-  ClientList::iterator itSpectator = spectators.find(clientId);
+    ClientList::iterator itSpectator = spectators.find(clientId);
   if (itSpectator != spectators.end())
   {
     localLog(logStream, NLogg::LEVEL_DEBUG).Trace(
@@ -566,7 +566,7 @@ const char* Clients::GetStatus(Clients::Status status)
   case Started: return "Started";
   case Blocked: return "Blocked";
   case Finished: return "Finished";
-  case WaitingRoll: return "WaitingRoll";
+case WaitingRoll: return "WaitingRoll";
   case Finishing: return "Finishing";
   case Terminated: return "Terminated";
   }
@@ -663,7 +663,7 @@ const char* Clients::GetClientStatus(Peered::Status status)
   case Peered::ConnectionTimedOutOnReconnect  : return "connection timed out on reconnect";
   case Peered::DisconnectedByAsync  : return "disconnected by async";
   case Peered::RefusedToReconnect  : return "refused to reconnect";
-  }
+    }
   return "<Unknown>";
 }
 
@@ -1407,7 +1407,7 @@ void Clients::DispatchBadBehaviourComplaint(int clientIndex, const Transport::TC
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Clients::AwardClients(const TUserAwards & awards)
 {
-  for (ClientContainer::iterator it = clients.begin(); it != clients.end(); ++it)
+    for (ClientContainer::iterator it = clients.begin(); it != clients.end(); ++it)
   {
     vector<roll::SAwardInfo> dummy;
     const vector<roll::SAwardInfo> * clientAwards = &dummy;

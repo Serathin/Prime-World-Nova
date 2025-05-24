@@ -8,6 +8,8 @@
 #include "System/NiTimer.h"
 #include "ReplayRunner.h"
 
+#include <vector>
+
 
 namespace Network
 {
@@ -68,7 +70,7 @@ class GameContext : public BaseObjectMT, public IGameContext, public lobby::ICli
   NI_DECLARE_REFCOUNT_CLASS_4( GameContext, BaseObjectMT, IGameContextUiInterface, lobby::IClientNotify, rpc::IGateKeeperCallback )
 
 public:
-  GameContext( const char * _sessionKey, const char * _devLogin, const char * _mapId, NGameX::ISocialConnection * _socialConnection, NGameX::GuildEmblem* _guildEmblem, const bool _isSpectator, const bool _isTutorial );
+  GameContext( const char * _sessionKey, const char * _devLogin, const char * _mapId, NGameX::ISocialConnection * _socialConnection, NGameX::GuildEmblem* _guildEmblem, const bool _isSpectator, const bool _isTutorial, std::vector<int>* hashes );
   ~GameContext();
 
   //IGameContext
@@ -143,6 +145,8 @@ private:
   Weak<NGameX::LoadingStatusHandler>  loadingStatusHandler;
 
   StrongMT<Transport::IChannel>       inputChannel;
+
+  std::vector<int> *hashes;
 
   void Init();
   void Cleanup();

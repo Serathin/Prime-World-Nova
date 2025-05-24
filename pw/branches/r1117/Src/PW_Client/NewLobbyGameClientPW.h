@@ -6,6 +6,9 @@
 #include "PF_GameLogic/GameControl.h"
 #include "PF_GameLogic/ReplayInfo.h"
 #include "System/JobThread.h"
+
+#include <vector>
+
 namespace NGameX
 {
   class AdventureScreen;
@@ -84,7 +87,7 @@ class GameClientPW : public NGameX::IGameControl, public GameClient
   NI_DECLARE_REFCOUNT_CLASS_2( GameClientPW, NGameX::IGameControl, GameClient );
 
 public:
-  GameClientPW( ClientPW * _client, NWorld::IMapCollection * _mapCollection, Game::NetworkStatusScreen * _networkStatusScreen, FastReconnectCtxPW * _fastReconnectCtxPw, NGameX::ISocialConnection * _socialConnection, Game::LoadingScreen * _loadingScreen, NGameX::GuildEmblem* _guildEmblem, const bool _isSpectator, const bool _isTutorial );
+  GameClientPW( ClientPW * _client, NWorld::IMapCollection * _mapCollection, Game::NetworkStatusScreen * _networkStatusScreen, FastReconnectCtxPW * _fastReconnectCtxPw, NGameX::ISocialConnection * _socialConnection, Game::LoadingScreen * _loadingScreen, NGameX::GuildEmblem* _guildEmblem, const bool _isSpectator, const bool _isTutorial, std::vector<int>* hashes );
   virtual ~GameClientPW(); 
 
   void SetChatClient( gamechat::IClient * chatClient );
@@ -165,8 +168,8 @@ private:
   
   //Strong<NGameX::IIgnoreListController> ignoreListController;
   /* 
-    при добавлении новых стронг-мемберов не забывайте прописать 
-    их зануление в деструкторе в нужном порядке
+    РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РЅРѕРІС‹С… СЃС‚СЂРѕРЅРі-РјРµРјР±РµСЂРѕРІ РЅРµ Р·Р°Р±С‹РІР°Р№С‚Рµ РїСЂРѕРїРёСЃР°С‚СЊ 
+    РёС… Р·Р°РЅСѓР»РµРЅРёРµ РІ РґРµСЃС‚СЂСѓРєС‚РѕСЂРµ РІ РЅСѓР¶РЅРѕРј РїРѕСЂСЏРґРєРµ
   */
 };  
 

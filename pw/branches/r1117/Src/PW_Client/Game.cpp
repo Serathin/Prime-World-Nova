@@ -108,6 +108,8 @@
 
 #include "RegistryToolbox.h"
 
+#include <vector>
+
 static int    g_VideoFPS = 10;
 static float  g_RecordingTime = 10.0f;
 static bool   g_DebugDumpInfo = false;
@@ -277,7 +279,7 @@ bool CheckHardwareCompatibility()
   const NDb::ClientHardwareErrorMessages* const heMessages = &sessionMessages->clientHardwareErrorMessages;
 
   if ( GlobalMemoryStatusEx( &globMemStatus ) )
-    hasEnoughMemory = ( ( globMemStatus.ullTotalPhys / 1024ul )  > 900000 ); // да-да смешное число
+    hasEnoughMemory = ( ( globMemStatus.ullTotalPhys / 1024ul )  > 900000 ); // пїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
   if ( !supportSM30 || !hasEnoughMemory )
   {
@@ -308,13 +310,14 @@ struct SPluginSettings
   int   width;
   int   height;
   bool  fullscreen;
+  bool borderless;
   const char * sessionLogin;
   const char* serverName;
   const char* uid;
   const char* serverKey;
   const char* serverSecret;
 
-  SPluginSettings() : width( 0 ), height( 0 ), fullscreen( false ), sessionLogin( 0 ), serverName(0), uid(0), serverKey(0), serverSecret(0) {}
+  SPluginSettings() : width( 0 ), height( 0 ), fullscreen( false ), borderless( false ), sessionLogin( 0 ), serverName(0), uid(0), serverKey(0), serverSecret(0) {}
 };
 
 
@@ -422,8 +425,8 @@ private:
   T arr[N];
 };
 
-//В интервале времени 0.2(9) секунды всегда
-//помещаются ровно 2 такта логики
+//пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0.2(9) пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 2 пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 static float g_maxMovingAvgTime = 0.2999999f;
 
 REGISTER_DEV_VAR( "max_smooth_time", g_maxMovingAvgTime, STORAGE_NONE);
@@ -443,8 +446,8 @@ void DebugTraceInvalidParamsHandler(const wchar_t* expression,
 
   DebugTrace( "Expression: %s\n", NStr::ToMBCS(expression).c_str() );
 
-  //Произошла фатальная ошибка. Продолжать работу нельзя. 
-  //Отдаём управления стандартному обработчику, который закроет программу.
+  //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ. 
+  //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
   (*g_oldInvalidParamHandler)( expression, function, file, line, pReserved );
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -592,10 +595,10 @@ void OnPileFileReadError(FileReadResultCode code, FileReadCallbackContext* pCont
       // Shutdown the SteamAPI
       if (s_bSteamInited)
         SteamAPI_Shutdown();
-      // Тк мы можем закараптиться на любой стадии, то у нас будет не правильная инициализация
-      // И правильно деинициализироваться мы не сможем
-      // Сейчас падает в exit(0) на деинициализации статиков где-то во флэше
-      // Поэтому показываем Message Box про закарапченные данные, а потом делаем TerminateProcess
+      // пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+      // пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+      // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ exit(0) пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Message Box пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ TerminateProcess
       // NUM_TASK
       TerminateProcess( GetCurrentProcess(), 0 );
       //exit(0);
@@ -782,7 +785,7 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
   persistentEvents::GetSingleton()->CheckUnfinishedSessions();
   persistentEvents::AutoClose persistentEventsAutoClose;
 
-  // убираем клиентский заголовок строки до состояния "как было" (только severity)
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ" (пїЅпїЅпїЅпїЅпїЅпїЅ severity)
   GetSystemLog().SetHeaderFormat( NLogg::EHeaderFormat::Default ); 
   GetGameLogicLog().SetHeaderFormat( 0 );
 
@@ -843,7 +846,7 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
 
   profiler3ui::Init();
   mainVars.initProfiler = true;
-
+  
   if( Compatibility::IsRunnedUnderWine() )
     DebugTrace( "System runned under Wine emulator" );
   else
@@ -955,6 +958,7 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
     pluginSett->width = (CmdLineLite::Instance().GetIntKey("parentWidth"));
     pluginSett->height = (CmdLineLite::Instance().GetIntKey("parentHeight"));
     pluginSett->fullscreen = (CmdLineLite::Instance().GetIntKey("parentFullscreen") != 0);
+    pluginSett->borderless = (CmdLineLite::Instance().GetIntKey("parentBorderless") != 0);
     pluginSett->sessionLogin = socialLaunchData.sessionId.c_str();
 
     pluginSett->uid = socialLaunchData.uid.c_str();
@@ -971,6 +975,7 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
     pluginSett->width = CmdLineLite::Instance().GetIntKey( "parentWidth" );
     pluginSett->height = CmdLineLite::Instance().GetIntKey( "parentHeight" );
     pluginSett->fullscreen = ( CmdLineLite::Instance().GetIntKey( "parentFullscreen" ) != 0 );
+    pluginSett->borderless = ( CmdLineLite::Instance().GetIntKey( "parentBorderless" ) != 0 );
     pluginSett->sessionLogin = CmdLineLite::Instance().GetStringKey( "parentSessionLogin" );
 
     pluginSett->uid = CmdLineLite::Instance().GetStringKey("uid");
@@ -1011,6 +1016,7 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
 
   //TODO: add SHIPPING ifdef
   bool fullscreen = NGlobal::GetVar( "gfx_fullscreen" ).GetInt64();
+  bool borderless = NGlobal::GetVar( "gfx_borderless" ).GetInt64();
 
   const string szAppName( NStr::StrFmt( "%s - %s - %d.%d.%02d.%04d", PRODUCT_TITLE, VERSION_LINE, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_REVISION ) );
   string windowTitle( NStr::StrFmt( "%s - %s - %d.%d.%02d.%04d", PRODUCT_TITLE, VERSION_BRANCH, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_REVISION ) );
@@ -1024,7 +1030,7 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
   //}
   //else
   {
-    if ( !NMainFrame::InitApplication( hInstance, szAppName.c_str(), windowTitle.c_str(), MAKEINTRESOURCEW( IDI_MAIN ), fullscreen, 800, 600, hWnd ) )
+    if ( !NMainFrame::InitApplication( hInstance, szAppName.c_str(), windowTitle.c_str(), MAKEINTRESOURCEW( IDI_MAIN ), fullscreen, borderless, 800, 600, hWnd ) )
     {
       mainVars.DeInit();
       return 0xDEAD;
@@ -1072,7 +1078,8 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
   RootFileSystem::AddDebugMonitor( new FileExtensionStatisticsMonitor );
   IFileReadCallback* callback = CreateFileReadCallback( OnPileFileReadError, new GameFileReadContext( pCastleLink ) );
 
-  RootFileSystem::RegisterFileSystem( new fileSystem::PileFileSystem(callback), callback );
+  std::vector<int> hashes;
+  RootFileSystem::RegisterFileSystem( new fileSystem::PileFileSystem(callback, &hashes), callback );
   RootFileSystem::RegisterFileSystem( new WinFileSystem( NFile::GetBaseDir() + "Data", false ) );
 
   if (g_language.empty())
@@ -1118,13 +1125,13 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
   }
   else if (isTutorial)
   {
-    context = new Game::GameContext(socialLaunchData.sessionId.c_str(), NULL, socialLaunchData.mapId.c_str(), socialServer, guildEmblem, false, true);
+    context = new Game::GameContext(socialLaunchData.sessionId.c_str(), NULL, socialLaunchData.mapId.c_str(), socialServer, guildEmblem, false, true, &hashes);
   }
   else
   {
     const char * devLogin = CmdLineLite::Instance().GetStringKey( "-dev_login", "" );
     const char * mapId = CmdLineLite::Instance().GetStringKey( "mapId", "" );
-    context = new Game::GameContext( sessLogin, devLogin, mapId, socialServer, guildEmblem, isSpectator, false );
+    context = new Game::GameContext( sessLogin, devLogin, mapId, socialServer, guildEmblem, isSpectator, false, &hashes );
   }
 
   context->Start();
@@ -1179,7 +1186,7 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
   if(s_NullRender != RENDER_DISABLE_FLAG) {
     const Render::RenderMode& currentRenderMode = Render::GetRenderer()->GetCurrentRenderMode();
     UI::UpdateScreenResolution( currentRenderMode.width, currentRenderMode.height, false );
-    NMainFrame::ResizeWindow( currentRenderMode.width, currentRenderMode.height, currentRenderMode.isFullScreen );
+    NMainFrame::ResizeWindow( currentRenderMode.width, currentRenderMode.height, currentRenderMode.isFullScreen, currentRenderMode.isBorderless );
   }
 
   if ( mainVars.logBox )
@@ -1251,7 +1258,7 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
       }
     }
 
-    if( fullscreen && altTabChecker.IsActive() )
+    if( fullscreen && !borderless && altTabChecker.IsActive() )
     {
       if(INVALID_HANDLE_VALUE == hFileMapping) {
         // Turn off Outlook notifications. See http://support.microsoft.com/kb/913045
@@ -1352,7 +1359,7 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
 
     const float commonTimeDelta = NMainLoop::GetTimeDelta();
     
-    //Усредняем длительность кадра, что даёт значительно более плавную картинку, при FPS < 60
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ FPS < 60
     const float smoothTimeDelta = avgDeltaTime.NextValue( NMainLoop::GetTimeDelta(), g_maxMovingAvgTime );    
     NMainLoop::SetTemporaryTimeDelta( smoothTimeDelta );
     
@@ -1366,7 +1373,7 @@ int __stdcall PseudoWinMain( HINSTANCE hInstance, HWND hWnd, LPTSTR lpCmdLine, S
       //Step game screens and stuff #here call adv screen
       const bool canContinue = NMainLoop::Step( NMainFrame::IsAppActive(), mainVars.input->GetEvents() );
       mainPerf_Step.Stop();
-      if ( !canContinue ) 
+            if ( !canContinue ) 
         break;
     }
 
@@ -1497,12 +1504,13 @@ INTERMODULE_EXPORT void WINAPIV StartPWApplication( HWND hWnd )
   PseudoWinMain( GetModuleHandle( NULL ), hWnd, GetCommandLine(), 0 );
 }
 
-INTERMODULE_EXPORT void WINAPIV StartPWPlugin( HWND hWnd, int width, int height, bool fullscreen, const char * sessionLogin )
+INTERMODULE_EXPORT void WINAPIV StartPWPlugin( HWND hWnd, int width, int height, bool fullscreen, bool borderless, const char * sessionLogin )
 {
   SPluginSettings sett;
   sett.width = width;
   sett.height = height;
   sett.fullscreen = fullscreen;
+  sett.borderless = borderless;
   sett.sessionLogin = sessionLogin;
   PseudoWinMain( GetModuleHandle( NULL ), hWnd, GetCommandLine(), &sett );
 

@@ -84,8 +84,8 @@ public:
 
   bool vcall( byte method_id, rpc::MethodCall& call, rpc::MethodCallStack& stack );
   virtual void* _Get( uint classId ) { return (classId == rpc::_GetId("Peered::IGameClient", rpc::GeneratedType) ) ? localObject : 0; }
-  virtual uint GetClassCrc() const { return 0xcf716401; }
-  static uint GetClassCrcStatic() { return 0xcf716401; }
+  virtual uint GetClassCrc() const { return 0xce53a05b; }
+  static uint GetClassCrcStatic() { return 0xce53a05b; }
 
   virtual int GetMemberIndex( const void* ) { return -1; }
 
@@ -206,8 +206,8 @@ public:
     
     static const rpc::MethodInfo methods[] = 
     {
-        { "Peered::IGameServer::AddClient", 4, false, rpc::GetMethodCode(&Peered::IGameServer::AddClient) },
-        { "Peered::IGameServer::AddClientFast", 4, false, rpc::GetMethodCode(&Peered::IGameServer::AddClientFast) },
+        { "Peered::IGameServer::AddClient", 6, false, rpc::GetMethodCode(&Peered::IGameServer::AddClient) },
+        { "Peered::IGameServer::AddClientFast", 6, false, rpc::GetMethodCode(&Peered::IGameServer::AddClientFast) },
         { "Peered::IGameServer::SendCommand", 3, false, rpc::GetMethodCode(&Peered::IGameServer::SendCommand) },
         { "Peered::IGameServer::OnFinishStep", 3, false, rpc::GetMethodCode(&Peered::IGameServer::OnFinishStep) },
         { "Peered::IGameServer::OnClientReady", 1, false, rpc::GetMethodCode(&Peered::IGameServer::OnClientReady) },
@@ -250,8 +250,8 @@ public:
 
   bool vcall( byte method_id, rpc::MethodCall& call, rpc::MethodCallStack& stack );
   virtual void* _Get( uint classId ) { return (classId == rpc::_GetId("Peered::IGameServer", rpc::GeneratedType) ) ? localObject : 0; }
-  virtual uint GetClassCrc() const { return 0xeb8e44be; }
-  static uint GetClassCrcStatic() { return 0xeb8e44be; }
+  virtual uint GetClassCrc() const { return 0x5af7d6de; }
+  static uint GetClassCrcStatic() { return 0x5af7d6de; }
 
   virtual int GetMemberIndex( const void* ) { return -1; }
 

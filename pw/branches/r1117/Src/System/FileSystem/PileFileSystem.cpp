@@ -13,8 +13,9 @@ PileFileSystem::PileFileSystem()
   ScanForPiles();
 }
 
-PileFileSystem::PileFileSystem(IFileReadCallback* callback ) 
-  : readCallback(callback)
+PileFileSystem::PileFileSystem(IFileReadCallback* callback, std::vector<int>* hashes ) 
+  : readCallback(callback),
+  hashes(hashes)
 {
   ScanForPiles();
 }
@@ -106,7 +107,7 @@ bool PileFileSystem::ScanForPiles()
     DebugTrace( "Pile file '%s' found", it->c_str() );
 
     Strong<FilePileLoader> pile = new FilePileLoader;
-    if ( pile->Init( *it, readCallback ) )
+    if ( pile->Init( *it, readCallback, hashes ) )
       piles.push_back( pile );
 /*
     else

@@ -34,6 +34,7 @@ namespace EDisconnectReason
     ClientAway          = 3,
     GameFinished        = 4,
     ServerError         = 5,
+    ClientDataCorrupted = 6,
   };
 }
 
@@ -122,8 +123,8 @@ REMOTE struct IGameServer : public rpc::IRemoteEntity
 
   NI_DECLARE_CLASS_1( IGameServer, rpc::IRemoteEntity );
 
-  REMOTE virtual void AddClient(const char* name, uint clientId, const Login::ClientVersion& clientVersion, NI_LPTR IGameClient* _client)=0;
-  REMOTE virtual void AddClientFast(int clientId, int clientIndex, NI_LPTR IGameClient* _client, int fromStep)=0;
+  REMOTE virtual void AddClient(const char* name, uint clientId, const Login::ClientVersion& clientVersion, NI_LPTR IGameClient* _client, bool isSpectator, int crc)=0;
+  REMOTE virtual void AddClientFast(int clientId, int clientIndex, NI_LPTR IGameClient* _client, int fromStep, bool isSpectator, int crc)=0;
 
   REMOTE virtual void SendCommand(int clientIndex, const rpc::MemoryBlock& command, bool isPlayerCommand)=0;
   REMOTE virtual void OnFinishStep(int clientIndex, uint step, uint worldCrc)=0;

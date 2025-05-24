@@ -1674,7 +1674,7 @@ void Interface::SetDefaultStates()
 
   IDirect3DDevice9* const pDevice = GetDevice();
   // GetStatesManagerOld()->SetMipMapBias( miplodbias );
-  //CRAP{ Перенести в SamplerState
+  //CRAP{ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ SamplerState
   for(size_t samplerIdx = 0; samplerIdx < 16; ++samplerIdx)
   {
     pDevice->SetSamplerState(samplerIdx, D3DSAMP_MIPMAPLODBIAS, (DWORD&)miplodbias);
@@ -1936,7 +1936,7 @@ static bool RestartRender()
   Interface::Get()->InvalidateResources();  
   Render::GetRenderer()->InvalidateResources();
  
-  NMainFrame::ApplyNewParams( renderMode.width, renderMode.height, renderMode.isFullScreen );
+  NMainFrame::ApplyNewParams( renderMode.width, renderMode.height, renderMode.isFullScreen, renderMode.isBorderless );
   Render::GetRenderer()->ApplyNewParams(renderMode);
        
   UI::ApplyNewParams( renderMode.width, renderMode.height, renderMode.isFullScreen );             
