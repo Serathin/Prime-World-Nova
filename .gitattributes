@@ -9,3 +9,4 @@ pw/branches/r1117/Vendor/Maya/2010/mkl_core.lib filter=lfs diff=lfs merge=lfs -t
 pw/branches/r1117/Vendor/Maya/2011/mkl_core.lib filter=lfs diff=lfs merge=lfs -text
 pw/branches/r1117/Vendor/Tamarin/Debug/Tamarin.lib filter=lfs diff=lfs merge=lfs -text
 pw/branches/r1117/Vendor/Tamarin/Release/Tamarin.lib filter=lfs diff=lfs merge=lfs -text
+*.pile filter=lfs diff=lfs merge=lfs -text
