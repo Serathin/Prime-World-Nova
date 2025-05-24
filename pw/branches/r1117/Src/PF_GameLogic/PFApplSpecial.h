@@ -4,6 +4,7 @@
 #include "PFBaseUnitEvent.h"
 #include "PFApplChannelling.h"
 #include "PFFlagpole.h"
+#include "PFMinigamePlace.h"
 #include "PFPickupable.h"
 
 
@@ -40,6 +41,26 @@ public:
   ZEND int operator&( IBinSaver &f ) { f.Add(1,(DBLinker*)this); f.Add(2,&pFlagpole); f.Add(3,&started); return 0; }
   PFApplRaiseFlag(PFApplCreatePars const &cp) : Base(cp), started( false ) {}
   PFApplRaiseFlag() : started( false ) {}
+protected:
+  virtual bool Start();
+  virtual bool Step( float dtInSeconds );
+  virtual void Fire();
+  virtual void Cancel();
+
+  virtual int GetAcceptableTargetFlags() const { return Target::FLAG_UNIT; }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class PFApplMinigame : public DBLinker<PFApplChannelling, NDb::MinigameApplicator>
+{
+  WORLD_OBJECT_METHODS(0xB76AA57, PFApplMinigame)
+  ZDATA_(DBLinker)
+  CPtr<PFMinigamePlace> pMinigame;
+  bool started;
+public:
+  ZEND int operator&( IBinSaver &f ) { f.Add(1,(DBLinker*)this); f.Add(2,&pMinigame); f.Add(3,&started); return 0; }
+  PFApplMinigame(PFApplCreatePars const &cp) : Base(cp), started( false ) {}
+  PFApplMinigame() : started( false ) {}
 protected:
   virtual bool Start();
   virtual bool Step( float dtInSeconds );

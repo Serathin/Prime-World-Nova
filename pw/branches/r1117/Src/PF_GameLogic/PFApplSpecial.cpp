@@ -9,6 +9,7 @@
 #include "PFDispatchFactory.h"
 #include "PFLogicDebug.h"
 #include "PFEaselPlayer.h"
+#include "PFHeroStates.h"
 #include "PFTargetSelector.h"
 #include "PFTree.h"
 #include "PFUIEvent.h"
@@ -159,6 +160,69 @@ bool PFApplRaiseFlag::Step( float dtInSeconds )
   }
 
   return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool PFApplMinigame::Start()
+{
+  if ( PFApplChannelling::Start() )
+  {
+    return true;
+  }
+
+  pMinigame = dynamic_cast<PFMinigamePlace*>( pReceiver.GetPtr() );
+  NI_VERIFY( IsValid( pMinigame ), "Target should be a minigame!", return true );
+
+  /*PFBaseHero *owner = dynamic_cast<PFBaseHero*>( GetAbilityOwner().GetPtr() );
+  NI_VERIFY( IsValid( owner ), "owner is null!", return true );
+
+  if ( pMinigame->IsAvailable() && pMinigame->CanBeUsedBy( owner ) && GetWorld()->GetAIWorld()->GetBattleStartDelay() <= 0 )
+  {
+    LogLogicObject(owner, "CMD MGLOBBY ENTER", false);
+    if ( PFInteractObjectState* st = dynamic_cast<PFInteractObjectState*>(owner->GetCurrentState()) )
+    {
+      st->NeedStopOnLeave( false );
+    }
+    owner->EnqueueState( new PFHeroUseUnitState( owner, pMinigame), true );
+    return false;
+  }*/
+
+  return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void PFApplMinigame::Fire()
+{
+  PFApplChannelling::Fire();
+  /*if ( IsUnitValid( pMinigame ) )
+  {
+    pMinigame->Use( GetAbilityOwner() );
+  }*/
+
+  PFBaseHero *owner = dynamic_cast<PFBaseHero*>( GetAbilityOwner().GetPtr() );
+  NI_VERIFY( IsValid( owner ), "owner is null!", return );
+
+  if ( pMinigame->IsAvailable() && pMinigame->CanBeUsedBy( owner ) && GetWorld()->GetAIWorld()->GetBattleStartDelay() <= 0 )
+  {
+    LogLogicObject(owner, "CMD MGLOBBY ENTER", false);
+    if ( PFInteractObjectState* st = dynamic_cast<PFInteractObjectState*>(owner->GetCurrentState()) )
+    {
+      st->NeedStopOnLeave( false );
+    }
+    owner->EnqueueState( new PFHeroUseUnitState( owner, pMinigame), true );
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void PFApplMinigame::Cancel()
+{
+  PFApplChannelling::Cancel();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool PFApplMinigame::Step( float dtInSeconds )
+{
+  return PFApplChannelling::Step( dtInSeconds );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1326,6 +1390,7 @@ bool PFApplSetTimescale::Start()
 REGISTER_WORLD_OBJECT_NM(PFApplDealedDamageConverter    , NWorld);
 REGISTER_WORLD_OBJECT_NM(PFApplDropTree                 , NWorld);
 REGISTER_WORLD_OBJECT_NM(PFApplRaiseFlag                , NWorld);
+REGISTER_WORLD_OBJECT_NM(PFApplMinigame                 , NWorld);
 REGISTER_WORLD_OBJECT_NM(PFApplSpellSwitch              , NWorld);
 REGISTER_WORLD_OBJECT_NM(PFApplProgram                  , NWorld);
 REGISTER_WORLD_OBJECT_NM(PFApplForAllTargets            , NWorld);

@@ -566,6 +566,7 @@ public:
 	float buildingsMinHealthExplosionPercent;
 	float buildingsFragEffectProbability;
 	Ptr< Ability > raiseFlagAbility;
+	Ptr< Ability > minigameAbility;
 	float talentsBuyRange;
 	Ptr< TalentsSet > defaultTalentsSet;
 	float talentBaseStatBudget;

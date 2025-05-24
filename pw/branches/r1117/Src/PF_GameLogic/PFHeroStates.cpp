@@ -609,6 +609,26 @@ namespace NWorld
   }
 
   //////////////////////////////////////////////////////////////////////////
+  PFHeroMinigameState::PFHeroMinigameState( PFBaseHero* _pOwner, PFMinigamePlace* _pMinigame ) 
+    : PFInteractObjectState( _pOwner, Target( _pMinigame ) )
+    , pMinigame(_pMinigame)
+  {
+    NDb::Ptr<NDb::Ability> const& pDBAbility = _pOwner->GetWorld()->GetAIWorld()->GetAIParameters().minigameAbility;
+    NI_VERIFY( IsValid( pDBAbility ), "invalid ability!", return );
+
+    CObj<PFAbilityData> pAbility = new PFAbilityData( _pOwner, pDBAbility, NDb::ABILITYTYPEID_SPECIAL);
+    range = pDBAbility->useRange(_pOwner, pMinigame, pAbility, 0.0f);
+  }
+
+  void PFHeroMinigameState::DoAction()
+  {
+    NDb::Ptr<NDb::Ability> const& pDBAbility = pOwner->GetWorld()->GetAIWorld()->GetAIParameters().minigameAbility;
+
+    pActionInstance = pOwner->UseExternalAbility(pDBAbility, target);
+    pOwner->EventHappened( PFBaseUnitAbilityStartEvent( pActionInstance.GetPtr() ) );
+  }
+
+  //////////////////////////////////////////////////////////////////////////
   PFInteractObjectState::PFInteractObjectState( PFBaseHero * _pOwner, const Target& _target )
     : HeroStateFSM( _pOwner )
     , target(_target)
@@ -715,13 +735,13 @@ namespace NWorld
       pOwner->EventHappened( PFBaseUnitEvent( NDb::BASEUNITEVENT_CHANNELINGCANCELED ) );
   }
 
-  // Есть в PFBaseUseState
+  // пїЅпїЅпїЅпїЅ пїЅ PFBaseUseState
   bool PFInteractObjectState::IsActionFinished() const
   {
     return pActionInstance ? pActionInstance->IsActivated() && !pOwner->IsInChannelling() : true;
   }
 
-  // Нужно?
+  // пїЅпїЅпїЅпїЅпїЅ?
   bool PFInteractObjectState::CanBeInterrupted() const
   {
     if ( pActionInstance )
@@ -802,6 +822,7 @@ REGISTER_WORLD_OBJECT_NM(PFHeroHoldState,           NWorld)
 REGISTER_WORLD_OBJECT_NM(PFHeroUseTalentState,      NWorld)
 REGISTER_WORLD_OBJECT_NM(PFHeroUseUnitState,        NWorld)
 REGISTER_WORLD_OBJECT_NM(PFCreatureRaiseFlagState,  NWorld)
+REGISTER_WORLD_OBJECT_NM(PFHeroMinigameState,       NWorld)
 REGISTER_WORLD_OBJECT_NM(PFInteractObjectState,     NWorld)
 REGISTER_WORLD_OBJECT_NM(PFHeroSuspendState,        NWorld)
 

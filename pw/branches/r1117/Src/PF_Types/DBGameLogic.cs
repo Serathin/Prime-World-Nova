@@ -714,6 +714,10 @@ namespace PF_GameLogic.DBGameLogic
     [Description( "Raise a flag ability" )]
     public DBPtr<Ability> raiseFlagAbility;
 
+    [FieldCategory( "Buildings" )]
+    [Description( "Minigame" )]
+    public DBPtr<Ability> minigameAbility;
+
     [FieldCategory( "Talents" )]
     [Description( "Max range from shop, then male hero can to activate talents" )]
     public float talentsBuyRange = 15.0f;

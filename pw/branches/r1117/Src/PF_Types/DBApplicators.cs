@@ -852,6 +852,14 @@ namespace PF_GameLogic.DBAbility
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  [TypeId(0xB76AA57)]
+  [UseTypeName("APLR")]
+  [FactoryImpl("Create", "NWorld::PFApplMinigame", "PFApplSpecial.h", CreateFunction = "NWorld::CreateApplicator<>")]
+  public class MinigameApplicator : ChannellingApplicator
+  {
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   [TypeId(0x9E677240)]
   [UseTypeName("APLR")]
   [FactoryImpl("Create", "NWorld::PFApplSpell", "PFApplInstant.h", CreateFunction = "NWorld::CreateApplicator<>")]

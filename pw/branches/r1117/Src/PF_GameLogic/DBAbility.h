@@ -5054,6 +5054,33 @@ public:
 	virtual NWorld::PFMicroAI* Create( NWorld::PFMicroAICreateParams const &cp ) const;
 };
 
+struct MinigameApplicator : public ChannellingApplicator
+{
+	DBRESOURCE_METHODS( MinigameApplicator );
+public:
+	enum { typeId = 0x0B76AA57 };
+	virtual const DWORD GetObjectTypeID() const { return (DWORD)MinigameApplicator::typeId; }
+
+	MinigameApplicator();
+
+	int operator&( IBinSaver &saver );
+	int operator&( IXmlSaver &saver );
+	void SerializeSelf( IXmlSaver &saver );
+
+	DbResource::checksum_type CalcCheckSum() const { return 0; }
+
+	MinigameApplicator& operator = ( const MinigameApplicator &_minigameApplicator ) { Assign( _minigameApplicator ); return *this; }
+	MinigameApplicator( const MinigameApplicator &_minigameApplicator ) { Assign( _minigameApplicator ); }
+	virtual void Assign( const MinigameApplicator &_minigameApplicator );
+	virtual void OverridableAssign( const DbResource * _pResource )
+	{
+		const MinigameApplicator * pOther = dynamic_cast< const MinigameApplicator * > ( _pResource );
+		if ( pOther ) MinigameApplicator::Assign( *pOther );
+	}
+
+	virtual NWorld::PFBaseApplicator* Create( NWorld::PFApplCreatePars const &cp ) const;
+};
+
 struct ModifyTerrainApplicator : public BaseApplicator
 {
 	DBRESOURCE_METHODS( ModifyTerrainApplicator );

@@ -124,6 +124,7 @@ REGISTER_DBRESOURCE( MainBuildingTargetSelector );
 REGISTER_DBRESOURCE( MarkerApplicator );
 REGISTER_DBRESOURCE( MaximizingTargetSelector );
 REGISTER_DBRESOURCE( BasicMicroAI );
+REGISTER_DBRESOURCE( MinigameApplicator );
 REGISTER_DBRESOURCE( ModifyTerrainApplicator );
 REGISTER_DBRESOURCE( MountApplicator );
 REGISTER_DBRESOURCE( MovementControlApplicator );
@@ -9788,6 +9789,70 @@ void BasicMicroAI::Assign( const BasicMicroAI& _basicMicroAI )
 NWorld::PFMicroAI* BasicMicroAI::Create( NWorld::PFMicroAICreateParams const &cp ) const
 {
 	return NWorld::CreateMicroAI<NWorld::PFBasicMicroAI>( *this, cp );
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+MinigameApplicator::MinigameApplicator()
+{
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int MinigameApplicator::operator&( IBinSaver &saver )
+{
+	saver.Add( 1, (ChannellingApplicator*)this );
+
+	return 0;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int MinigameApplicator::operator&( IXmlSaver &saver )
+{
+	if ( saver.HasParentAttr() )
+	{
+		string parent_str = saver.GetParentAttrValue();
+		__parent = ReadResource( saver, DBID(parent_str) );
+		if ( __parent.GetPtr() )
+		{
+			MinigameApplicator* parentPtr = (MinigameApplicator*)__parent.GetPtr();
+			Assign( *parentPtr );
+		}
+	}
+
+	SerializeSelf( saver );
+	return 0;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void MinigameApplicator::SerializeSelf( IXmlSaver &saver )
+{
+	ChannellingApplicator::SerializeSelf( saver );
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void MinigameApplicator::Assign( const MinigameApplicator& _minigameApplicator )
+{
+	targetSelector = _minigameApplicator.targetSelector;
+	channelingType = _minigameApplicator.channelingType;
+	applicatorsOnSelf = _minigameApplicator.applicatorsOnSelf;
+	startSpell = _minigameApplicator.startSpell;
+	periodicalSpell = _minigameApplicator.periodicalSpell;
+	stopSpell = _minigameApplicator.stopSpell;
+	cancelSpell = _minigameApplicator.cancelSpell;
+	period = _minigameApplicator.period;
+	interruptEvents = _minigameApplicator.interruptEvents;
+	cancelOnInterrupt = _minigameApplicator.cancelOnInterrupt;
+	removeStartSpellEffectOnInterrupt = _minigameApplicator.removeStartSpellEffectOnInterrupt;
+	scaleWhenInterrupted = _minigameApplicator.scaleWhenInterrupted;
+	cancelOnDisable = _minigameApplicator.cancelOnDisable;
+	behaviorFlags = _minigameApplicator.behaviorFlags;
+	lifeTime = _minigameApplicator.lifeTime;
+	effect = _minigameApplicator.effect;
+	startCondition = _minigameApplicator.startCondition;
+	enabled = _minigameApplicator.enabled;
+	applyTarget = _minigameApplicator.applyTarget;
+	formulaName = _minigameApplicator.formulaName;
+	LoggingEvent = _minigameApplicator.LoggingEvent;
+	providerName = _minigameApplicator.providerName;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+NWorld::PFBaseApplicator* MinigameApplicator::Create( NWorld::PFApplCreatePars const &cp ) const
+{
+	return NWorld::CreateApplicator<NWorld::PFApplMinigame>( *this, cp );
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ModifyTerrainApplicator::ModifyTerrainApplicator()

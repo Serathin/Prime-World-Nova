@@ -2633,6 +2633,7 @@ public class AILogicParameters : DBResource
 	private UndoRedo<float> _buildingsMinHealthExplosionPercent;
 	private UndoRedo<float> _buildingsFragEffectProbability;
 	private UndoRedoDBPtr<Ability> _raiseFlagAbility;
+	private UndoRedoDBPtr<Ability> _minigameAbility;
 	private UndoRedo<float> _talentsBuyRange;
 	private UndoRedoDBPtr<TalentsSet> _defaultTalentsSet;
 	private UndoRedo<float> _talentBaseStatBudget;
@@ -2813,6 +2814,10 @@ public class AILogicParameters : DBResource
 	[Description( "Raise a flag ability" )]
 	public DBPtr<Ability> raiseFlagAbility { get { return _raiseFlagAbility.Get(); } set { _raiseFlagAbility.Set( value ); } }
 
+	[Category( "Buildings" )]
+	[Description( "Minigame" )]
+	public DBPtr<Ability> minigameAbility { get { return _minigameAbility.Get(); } set { _minigameAbility.Set( value ); } }
+
 	[Category( "Talents" )]
 	[Description( "Max range from shop, then male hero can to activate talents" )]
 	public float talentsBuyRange { get { return _talentsBuyRange.Get(); } set { _talentsBuyRange.Set( value ); } }
@@ -2947,6 +2952,7 @@ public class AILogicParameters : DBResource
 		_buildingsMinHealthExplosionPercent = new UndoRedo<float>( owner, 80.0f );
 		_buildingsFragEffectProbability = new UndoRedo<float>( owner, 0.2f );
 		_raiseFlagAbility = new UndoRedoDBPtr<Ability>( owner );
+		_minigameAbility = new UndoRedoDBPtr<Ability>( owner );
 		_talentsBuyRange = new UndoRedo<float>( owner, 15.0f );
 		_defaultTalentsSet = new UndoRedoDBPtr<TalentsSet>( owner );
 		_talentBaseStatBudget = new UndoRedo<float>( owner, 480.0f );
@@ -3027,6 +3033,7 @@ public class AILogicParameters : DBResource
 		_buildingsMinHealthExplosionPercent.Changed += FireChangedEvent;
 		_buildingsFragEffectProbability.Changed += FireChangedEvent;
 		_raiseFlagAbility.Changed += FireChangedEvent;
+		_minigameAbility.Changed += FireChangedEvent;
 		_talentsBuyRange.Changed += FireChangedEvent;
 		_defaultTalentsSet.Changed += FireChangedEvent;
 		_talentBaseStatBudget.Changed += FireChangedEvent;
@@ -3109,6 +3116,7 @@ public class AILogicParameters : DBResource
 		buildingsMinHealthExplosionPercent = source.buildingsMinHealthExplosionPercent;
 		buildingsFragEffectProbability = source.buildingsFragEffectProbability;
 		raiseFlagAbility = source.raiseFlagAbility;
+		minigameAbility = source.minigameAbility;
 		talentsBuyRange = source.talentsBuyRange;
 		defaultTalentsSet = source.defaultTalentsSet;
 		talentBaseStatBudget = source.talentBaseStatBudget;
@@ -3207,6 +3215,7 @@ public class AILogicParameters : DBResource
 		_buildingsMinHealthExplosionPercent.SetParent( newParent == null ? null : newParent._buildingsMinHealthExplosionPercent );
 		_buildingsFragEffectProbability.SetParent( newParent == null ? null : newParent._buildingsFragEffectProbability );
 		_raiseFlagAbility.SetParent( newParent == null ? null : newParent._raiseFlagAbility );
+		_minigameAbility.SetParent( newParent == null ? null : newParent._minigameAbility );
 		_talentsBuyRange.SetParent( newParent == null ? null : newParent._talentsBuyRange );
 		_defaultTalentsSet.SetParent( newParent == null ? null : newParent._defaultTalentsSet );
 		_talentBaseStatBudget.SetParent( newParent == null ? null : newParent._talentBaseStatBudget );
@@ -3285,6 +3294,7 @@ public class AILogicParameters : DBResource
 		_buildingsMinHealthExplosionPercent.Reset();
 		_buildingsFragEffectProbability.Reset();
 		_raiseFlagAbility.Reset();
+		_minigameAbility.Reset();
 		_talentsBuyRange.Reset();
 		_defaultTalentsSet.Reset();
 		_talentBaseStatBudget.Reset();
@@ -3366,6 +3376,7 @@ public class AILogicParameters : DBResource
 			&& _buildingsMinHealthExplosionPercent.IsDerivedFromParent()
 			&& _buildingsFragEffectProbability.IsDerivedFromParent()
 			&& _raiseFlagAbility.IsDerivedFromParent()
+			&& _minigameAbility.IsDerivedFromParent()
 			&& _talentsBuyRange.IsDerivedFromParent()
 			&& _defaultTalentsSet.IsDerivedFromParent()
 			&& _talentBaseStatBudget.IsDerivedFromParent()
@@ -3490,6 +3501,8 @@ public class AILogicParameters : DBResource
 			_buildingsFragEffectProbability.Reset();
 		else if ( fieldName == "raiseFlagAbility" )
 			_raiseFlagAbility.Reset();
+		else if ( fieldName == "minigameAbility" )
+			_minigameAbility.Reset();
 		else if ( fieldName == "talentsBuyRange" )
 			_talentsBuyRange.Reset();
 		else if ( fieldName == "defaultTalentsSet" )
@@ -3646,6 +3659,8 @@ public class AILogicParameters : DBResource
 			return _buildingsFragEffectProbability.IsDerivedFromParent();
 		if ( fieldName == "raiseFlagAbility" )
 			return _raiseFlagAbility.IsDerivedFromParent();
+		if ( fieldName == "minigameAbility" )
+			return _minigameAbility.IsDerivedFromParent();
 		if ( fieldName == "talentsBuyRange" )
 			return _talentsBuyRange.IsDerivedFromParent();
 		if ( fieldName == "defaultTalentsSet" )

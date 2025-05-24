@@ -2,7 +2,7 @@
 #include "HeroActions.h"
 
 #include "PFBaseUnitStates.h"
-#include "PFBuildings.h"//для доступа к позиции здания
+#include "PFBuildings.h"//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 #include "PFMinigamePlace.h"
 
 #include "Minimap.h"
@@ -494,15 +494,7 @@ namespace NWorld
 
       NI_VERIFY(minigamePlace, "Object is not minigame place!", return; );
 
-      if ( minigamePlace->IsAvailable() && minigamePlace->CanBeUsedBy( easelPlayer ) && pPFWorld->GetAIWorld()->GetBattleStartDelay() <= 0 )
-      {
-        LogLogicObject(easelPlayer, "CMD MGLOBBY ENTER", false);
-        if ( PFInteractObjectState* st = dynamic_cast<PFInteractObjectState*>(easelPlayer->GetCurrentState()) )
-        {
-          st->NeedStopOnLeave( false );
-        }
-        easelPlayer->EnqueueState( new PFHeroUseUnitState( easelPlayer, minigamePlace), true );
-      }
+      easelPlayer->EnqueueState( new PFHeroMinigameState(easelPlayer, minigamePlace), true );
 #endif
     }
   }

@@ -16604,6 +16604,92 @@ public class BasicMicroAI : MicroAI
 
 }
 
+[FactoryImpl("Create", "NWorld::PFApplMinigame", "PFApplSpecial.h", CreateFunction = "NWorld::CreateApplicator<>")]
+[TypeId(0x0B76AA57)]
+[UseTypeName("APLR")]
+public class MinigameApplicator : ChannellingApplicator
+{
+	private UndoRedoDBPtr<MinigameApplicator> ___parent;
+	[HideInOutliner]
+	public new DBPtr<MinigameApplicator> __parent { get { return ___parent.Get(); }
+		set { if ( GeneratedCodeUtilities.CanSetParent( this, value ) ) { SetParent( value ); } } }
+
+
+	private void Initialize( DBResource owner )
+	{
+		___parent = new UndoRedoDBPtr<MinigameApplicator>(owner);
+		___parent.Changed += FireChangedEvent;
+	}
+
+	public MinigameApplicator()
+	{
+		Initialize( this );
+	}
+	private void AssignSelf( MinigameApplicator source )
+	{
+		DataBase.UndoRedoManager.Start( "Assign for MinigameApplicator" );
+		DataBase.UndoRedoManager.Commit();
+	}
+
+	public override void Assign( object _source )
+	{
+		MinigameApplicator source = _source as MinigameApplicator;
+		if ( source == null || this == source )
+			return;
+		DataBase.UndoRedoManager.Start( "Assign for MinigameApplicator" );
+		AssignSelf( source );
+		DataBase.UndoRedoManager.Commit();
+	}
+
+	public override void SetParent( object _newParent )
+	{
+		DataBase.UndoRedoManager.SerializeSuspend();
+		DBPtrBase rawParent = _newParent as DBPtrBase;
+		MinigameApplicator newParent = rawParent == null ? null : rawParent.Get<MinigameApplicator>();
+		if ( newParent == null && _newParent is MinigameApplicator )
+			newParent = _newParent as MinigameApplicator;
+		if ( newParent == null && this.__parent.IsValid )
+			AssignSelf( this );
+		this.__parent.Set( newParent == null ? DBID.Empty : newParent.DBId );
+		base.SetParent( newParent );
+
+		DataBase.UndoRedoManager.SerializeResume();
+	}
+
+	public override void Reset()
+	{
+		base.Reset();
+	}
+
+	public override bool IsDerivedFromParent()
+	{
+		if ( __parent == null || __parent.Get() == null )
+			return true;
+		return 
+			base.IsDerivedFromParent();
+	}
+
+	public override void ResetField( string fieldName )
+	{
+			base.ResetField( fieldName );
+	}
+
+	public override bool IsFieldDerivedFromParent( string fieldName )
+	{
+		if ( __parent == null || __parent.Get() == null )
+			return true;
+		if ( fieldName == "__parent" )
+			return __parent == null || __parent.Get() == null;
+		else
+			return base.IsFieldDerivedFromParent( fieldName );
+	}
+	public override bool HasParent()
+	{
+		return __parent != null;
+	}
+
+}
+
 [DBVersion(0)]
 [FactoryImpl("Create", "NWorld::PFApplModifyTerrain", "PFApplSpecial.h", CreateFunction = "NWorld::CreateApplicator<>")]
 [TypeId(0x0E676B42)]

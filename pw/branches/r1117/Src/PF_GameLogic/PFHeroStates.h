@@ -14,6 +14,7 @@ namespace NWorld
 {
   class PFFlagpole;
   class PFPickupableObjectBase;
+  class PFMinigamePlace;
 
   //////////////////////////////////////////////////////////////////////////
   class HeroStateFSM: public PFBaseHeroState, protected PFHFSM
@@ -212,6 +213,21 @@ namespace NWorld
     virtual void DoAction();
   };
 
+  class PFHeroMinigameState : public PFInteractObjectState
+  {
+    WORLD_OBJECT_METHODS(0x49771557, PFHeroMinigameState);
+
+    ZDATA_(PFInteractObjectState)
+    CPtr<PFMinigamePlace> pMinigame;
+  public:
+    ZEND int operator&( IBinSaver &f ) { f.Add(1,(PFInteractObjectState*)this); f.Add(2,&pMinigame); return 0; }
+
+    PFHeroMinigameState( PFBaseHero* pOwner, PFMinigamePlace* _pMinigame );
+    PFHeroMinigameState(){}
+  protected:
+    virtual void DoAction();
+  };
+
   class PFHeroPickupObjectState : public PFInteractObjectState
   {
   public:
@@ -244,7 +260,7 @@ namespace NWorld
     ZEND int operator&( IBinSaver &f ) { f.Add(1,(HeroStateFSM*)this); f.Add(2,&suspendTimeout); f.Add(3,&waitTime); f.Add(4,&isSuspendLong); return 0; }
     PFHeroSuspendState( CPtr<PFBaseHero> const& pOwner, bool isLongSuspend);
 
-    // Всегда покидает стек при пуше другого поверх него.
+    // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ.
     virtual bool IsEscaping() const { return true; }
 
   protected:
